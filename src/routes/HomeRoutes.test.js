@@ -4,22 +4,23 @@ import {rest} from 'msw';
 import { MemoryRouter } from 'react-router-dom';
 import HomeRouter from './HomeRoute';
 import HomeRoute from './HomeRoute';
+import {createServer} from '../test/server';
 
-const handlers = [
-    rest.get('/api/repositories', (req, res, ctx) => {
-        const language = req.url.searchParams.get('q').split('language:')[1];
-        console.log(language);
-
-        return res(
-            ctx.json({
+createServer([
+    {
+        path: '/api/repositories',
+        method: 'get',
+        res: (res, req, ctx) => {
+            const language = req.url.searchParams.get('q').split('language:')[1];
+            return {
                 items: [
                     {id: 1, full_name: `${language}_one`},
-                    {id: 2, full_name: `${language}_two`},
-                ],
-            })
-        );
-    }),
-];
+                    {id: 2, full_name: `${language}_two`}
+                ]
+            }
+        }
+    }
+]);
 
 const server = setupServer(...handlers);
 
